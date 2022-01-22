@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { Button, Input } from "react-native-elements";
 
 const LoginScreen = () => {
@@ -13,7 +13,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       if (authUser) {
-        navigation.replace("Home");
+        navigation.replace("Profile");
       }
     });
   });
@@ -21,6 +21,12 @@ const LoginScreen = () => {
   const signIn = () => {
     signInWithEmailAndPassword(auth, email, password).catch((error) => alert(error));
   };
+
+  useFocusEffect(() => {
+    if (auth.currentUser) {
+      navigation.replace("Profile");
+    }
+  });
 
   return (
     <KeyboardAvoidingView
@@ -47,7 +53,7 @@ const LoginScreen = () => {
       <Button containerStyle={styles.button} onPress={signIn} title="Login"></Button>
       <Button
         containerStyle={styles.button}
-        onPress={() => navigation.navigate("registerScreen")}
+        onPress={() => navigation.navigate("Register")}
         type="outline"
         title="Register"
       ></Button>

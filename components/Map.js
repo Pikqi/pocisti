@@ -5,39 +5,26 @@ import { Button } from "react-native-elements";
 import { db } from "../firebase";
 import { addDoc, collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
 import * as Location from "expo-location";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Map = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
-  // let markers = [];
-  //  primer location objekta
-  // const l = {
-  //   coords: {
-  //     altitude: 78.52421951293945,
-  //     altitudeAccuracy: 6.847761631011963,
-  //     latitude: 44.83662210649649,
-  //     accuracy: 35,
-  //     longitude: 20.415730139287064,
-  //     heading: -1,
-  //     speed: -1,
-  //   },
-  //   timestamp: 1642717700803.5933,
-  // };
 
   const ANCHOR = { x: 0.5, y: 0.5 };
 
-  const captureLocation = () => {
-    addDoc(collection(db, "coords"), {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      timeStamp: Timestamp.now(),
-    });
-  };
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
 
   useEffect(() => {
     getMarkers();
   }, []);
+
+  // useFocusEffect(() => {
+  //   getCurrentLocation();
+  // });
 
   const getMarkers = async () => {
     const querySnapshot = await getDocs(collection(db, "coords"));
@@ -48,27 +35,29 @@ const Map = () => {
       latitude: item.data().latitude,
     }));
     setMarkers(m);
-    console.log(markers);
+    // console.log(markers);
     // console.log(m);
   };
   // getting permisssion for location and location obj from expo docs
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
 
   const getCurrentLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    let { status } = await Location.getForegroundPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
       return;
     }
 
-    // let location = await Location.getCurrentPositionAsync({ timeInterval: 2000 });
-    await Location.watchPositionAsync({ timeInterval: 1000 }, (location) => {
-      setLocation(location);
-      console.log("lokacija korisnika" + JSON.stringify(location));
-    });
-    // getCurrentLocation();r
+    await Location.enableNetworkProviderAsync();
+
+    let unsub = await Location.watchPositionAsync(
+      { accuracy: Location.Accuracy.High, timeInterval: 500 },
+      (loc) => {
+        console.log(loc);
+        setLocation(loc);
+      }
+    );
+
+    return unsub;
   };
 
   return (

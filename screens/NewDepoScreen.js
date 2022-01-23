@@ -1,27 +1,53 @@
-import { Button, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button } from "react-native-elements";
 import React, { useState } from "react";
 import tw from "twrnc";
+import { db } from "../firebase";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import * as Location from "expo-location";
 
 const NewDepoScreen = () => {
   const [description, setDescription] = useState("");
-
+  const [location, setLocation] = useState({});
+  const [locationLabel, setLocationLabel] = useState("");
   // TODO GET USERS LOCATION
   // geolocation after
-  const getLocation = () => {};
+  const getLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    await Location.enableNetworkProviderAsync();
+    // let location = await Location.getCurrentPositionAsync({ timeInterval: 2000 });
+    const currentLocation = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    });
+    setLocation(currentLocation);
+    console.log(location);
+  };
   // TODO GET LOCATION BY SEARCH
   const selectLocation = () => {};
   // TODO GET PHOTO FROM GALLERY
   const getPhotoFromGallery = () => {};
 
+  const createNewDepo = async () => {
+    const docRef = await addDoc(collection(db, "depo"), {
+      timeStamp: Timestamp.now(),
+      description: description,
+      cleaned: false,
+    });
+  };
+
   return (
     <SafeAreaView style={tw`flex-1 bg-gray-200`}>
-      <Text style={tw`mt-10 mx-auto font-bold text-lg `}>Prijavite novu deponiju</Text>
+      <Text style={tw`mt-10 mx-auto font-bold text-xl `}>Prijavite novu deponiju</Text>
 
       {/* Description */}
 
-      <View style={tw`ml-5 mt-10`}>
+      <View style={tw`ml-5 mt-10 mr-5 flex-1 text-lg`}>
         <View>
-          <Text style={tw`font-medium`}>Unesite opis deponije</Text>
+          <Text style={tw`font-medium text-lg`}>Unesite opis deponije</Text>
           <TextInput
             value={description}
             onChangeText={(text) => setDescription(text)}
@@ -35,10 +61,10 @@ const NewDepoScreen = () => {
         <View style={tw`mt-5`}>
           <Text style={tw`mb-2`}>Izaberite lokaciju deponije</Text>
 
-          <View style={tw` flex-row items-center `}>
+          <View style={tw` flex-row justify-between `}>
             <Button
               onPress={getLocation}
-              buttonStyle={{ width: 200 }}
+              buttonStyle={{ width: 150 }}
               containerStyle={{ margin: 5 }}
               disabledStyle={{
                 borderWidth: 2,
@@ -46,12 +72,12 @@ const NewDepoScreen = () => {
               }}
               disabledTitleStyle={{ color: "#00F" }}
               loadingProps={{ animating: true }}
-              title="Koristi moju lokaciju"
+              title="Trenutna lokacija"
               titleStyle={{ marginHorizontal: 5 }}
             />
             <Button
               onPress={selectLocation}
-              buttonStyle={{ width: 200 }}
+              buttonStyle={{ width: 150 }}
               containerStyle={{ margin: 5 }}
               disabledStyle={{
                 borderWidth: 2,
@@ -66,7 +92,7 @@ const NewDepoScreen = () => {
         </View>
         {/* Street name: */}
         <View>
-          <Text style={tw`my-2`}>Neka ulica </Text>
+          <Text style={tw`my-2`}>Izabrali ste: {locationLabel}</Text>
         </View>
         {/* Photos of depo */}
         <View style={tw`mt-5 -ml-5`}>
@@ -90,6 +116,37 @@ const NewDepoScreen = () => {
               disabledTitleStyle={{ color: "#00F" }}
               loadingProps={{ animating: true }}
               title="Fotografisi sada"
+              titleStyle={{ marginHorizontal: 5 }}
+            />
+          </View>
+        </View>
+        {/* Submit depo */}
+        <View style={tw`absolute bottom-3 ml-4 `}>
+          <View style={tw`flex-row justify-between items-center`}>
+            <Button
+              onPress={getLocation}
+              buttonStyle={{ width: 150, backgroundColor: "red" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              loadingProps={{ animating: true }}
+              title="Odbaci"
+              titleStyle={{ marginHorizontal: 5 }}
+            />
+            <Button
+              onPress={createNewDepo}
+              buttonStyle={{ width: 150, backgroundColor: "green" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              loadingProps={{ animating: true }}
+              title="Potvrdi"
               titleStyle={{ marginHorizontal: 5 }}
             />
           </View>

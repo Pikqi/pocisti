@@ -6,7 +6,8 @@ import { Icon } from "react-native-elements";
 // Ekrani
 import HomeScreen from "./screens/HomeScreen";
 import ProfileScreenStack from "./screens/ProfileScreenStack";
-
+import NewDepoScreen from "./screens/NewDepoScreen";
+import { StatusBar } from "expo-status-bar";
 export default function App() {
   const Tab = createBottomTabNavigator();
   LogBox.ignoreAllLogs(true);
@@ -23,6 +24,9 @@ export default function App() {
             } else if (route.name === "ProfileStack") {
               iconName = "profile";
               iconType = "antdesign";
+            } else if (route.name === "NewDepo") {
+              iconName = focused ? "pluscircle" : "pluscircleo";
+              iconType = "antdesign";
             }
 
             // You can return any component that you like here!
@@ -34,8 +38,10 @@ export default function App() {
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
+        <Tab.Screen name="NewDepo" component={NewDepoScreen}></Tab.Screen>
         <Tab.Screen name="ProfileStack" component={ProfileScreenStack}></Tab.Screen>
       </Tab.Navigator>
+      <StatusBar style="light"></StatusBar>
     </NavigationContainer>
   );
 }

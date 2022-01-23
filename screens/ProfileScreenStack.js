@@ -4,8 +4,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileScreen from "./ProfileScreen";
 import LoginScreen from "./LoginScreen";
 import RegisterScreen from "./RegisterScreen";
-import { useNavigation } from "@react-navigation/native";
-import { getAuth } from "firebase/auth";
 
 const ProfileScreenStack = () => {
   const Stack = createNativeStackNavigator();

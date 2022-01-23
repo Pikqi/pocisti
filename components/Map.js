@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { Button } from "react-native-elements";
-import { db, app } from "../firebase";
+import { db } from "../firebase";
 import { addDoc, collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
 import * as Location from "expo-location";
 
@@ -73,62 +73,46 @@ const Map = () => {
 
   return (
     <View style={{ height: "100%" }}>
-      <View style={{ height: "70%" }}>
-        <MapView
-          style={{ flex: 1 }}
-          mapType="mutedStandard"
-          initialRegion={{
-            latitude: 44.8366,
-            longitude: 20.4157,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005,
-          }}
-        >
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              anchor={ANCHOR}
-              style={styles.mapMarker}
-              coordinate={{
-                latitude: marker.latitude,
-                longitude: marker.longitude,
-              }}
-            ></Marker>
-          ))}
+      <MapView
+        style={{ flex: 1 }}
+        mapType="mutedStandard"
+        initialRegion={{
+          latitude: 44.8366,
+          longitude: 20.4157,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        }}
+      >
+        {markers.map((marker) => (
+          <Marker
+            key={marker.id}
+            anchor={ANCHOR}
+            style={styles.mapMarker}
+            coordinate={{
+              latitude: marker.latitude,
+              longitude: marker.longitude,
+            }}
+          ></Marker>
+        ))}
 
-          {/* marker trenutne lokacije direkt kopirano sa githuba */}
-          {location && (
-            <Marker
-              key={1}
-              anchor={ANCHOR}
-              style={styles.mapMarker}
-              coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }}
-            >
-              <View style={styles.container}>
-                <View style={styles.markerHalo} />
-                <View style={styles.marker} />
-              </View>
-            </Marker>
-          )}
-        </MapView>
-      </View>
-      <View style={{ height: "30%" }}>
-        <Button
-          onPress={captureLocation}
-          buttonStyle={{ width: 150 }}
-          containerStyle={{ margin: 5 }}
-          disabledTitleStyle={{ color: "#00F" }}
-          linearGradientProps={null}
-          iconContainerStyle={{ background: "#000" }}
-          loadingStyle={{}}
-          title="Hello"
-          titleProps={{}}
-          titleStyle={{ marginHorizontal: 5 }}
-        />
-      </View>
+        {/* marker trenutne lokacije direkt kopirano sa githuba */}
+        {location && (
+          <Marker
+            key={1}
+            anchor={ANCHOR}
+            style={styles.mapMarker}
+            coordinate={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            }}
+          >
+            <View style={styles.container}>
+              <View style={styles.markerHalo} />
+              <View style={styles.marker} />
+            </View>
+          </Marker>
+        )}
+      </MapView>
     </View>
   );
 };

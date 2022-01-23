@@ -1,15 +1,21 @@
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button } from "react-native-elements";
 import React, { useState } from "react";
 import tw from "twrnc";
 import { db } from "../firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import * as Location from "expo-location";
+import { getAuth } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 
 const NewDepoScreen = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState({});
   const [adress, setAdress] = useState("");
+
+  const auth = getAuth();
+  const navigation = useNavigation();
+
   // TODO GET USERS LOCATION
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -27,23 +33,58 @@ const NewDepoScreen = () => {
     getAdress(currentLocation);
     console.log(location);
   };
+
   // geolocation after
   const getAdress = async (loc) => {
     const adr = await Location.reverseGeocodeAsync(loc.coords);
     console.log(adr);
-    setAdress(adr[0].street + " " + adr[0].streetNumber);
+    setAdress(
+      adr[0].street + " " + adr[0].streetNumber + " " + adr[0].district + " " + adr[0].city
+    );
   };
   // TODO GET LOCATION BY SEARCH
   const selectLocation = () => {};
   // TODO GET PHOTO FROM GALLERY
   const getPhotoFromGallery = () => {};
 
+  // SLANJE NOVE DEPONIJE
   const createNewDepo = async () => {
-    const docRef = await addDoc(collection(db, "depo"), {
-      timeStamp: Timestamp.now(),
-      description: description,
-      cleaned: false,
-    });
+    // KORISNIK MORA BITI ULOGOVAN KAKO BI POSLAO
+    const user = auth.currentUser;
+    // obavesti korisnika da nije ulogovan
+    if (!user) {
+      Alert.alert("Greska", "Da biste prijavili deponiju morate biti ulogovani", [
+        {
+          text: "Odbaci",
+        },
+        {
+          text: "Uloguj se",
+          onPress: () => navigation.navigate("ProfileStack"),
+        },
+      ]);
+    }
+
+    // Proveri da li svi podaci postoje
+
+    if (description && adress) {
+      // Podaci postoje -> posalji novu deponiju
+
+      const docRef = await addDoc(collection(db, "depo"), {
+        timeStamp: Timestamp.now(),
+        description: description,
+        adress: adress,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        cleaned: false,
+        userId: user.uid,
+        userName: user.displayName,
+      });
+      // resetuj state
+      setDescription("");
+      setAdress("");
+      setLocation({});
+      return;
+    }
   };
 
   return (
@@ -99,7 +140,9 @@ const NewDepoScreen = () => {
         </View>
         {/* Street name: */}
         <View>
-          <Text style={tw`my-2`}>Izabrali ste: {adress}</Text>
+          <Text style={tw`my-2`}>
+            {adress ? `Izabrali ste: ${adress}` : "Niste jos izabrali adresu"}
+          </Text>
         </View>
         {/* Photos of depo */}
         <View style={tw`mt-5 -ml-5`}>

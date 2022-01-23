@@ -27,7 +27,7 @@ const Map = () => {
   // });
 
   const getMarkers = async () => {
-    const querySnapshot = await getDocs(collection(db, "coords"));
+    const querySnapshot = await getDocs(collection(db, "depo"));
 
     const m = querySnapshot.docs.map((item) => ({
       id: item.id,

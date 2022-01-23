@@ -9,9 +9,8 @@ import * as Location from "expo-location";
 const NewDepoScreen = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState({});
-  const [locationLabel, setLocationLabel] = useState("");
+  const [adress, setAdress] = useState("");
   // TODO GET USERS LOCATION
-  // geolocation after
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -19,12 +18,20 @@ const NewDepoScreen = () => {
       return;
     }
     await Location.enableNetworkProviderAsync();
+    const oldLocation = location;
     // let location = await Location.getCurrentPositionAsync({ timeInterval: 2000 });
     const currentLocation = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
     });
     setLocation(currentLocation);
+    getAdress(currentLocation);
     console.log(location);
+  };
+  // geolocation after
+  const getAdress = async (loc) => {
+    const adr = await Location.reverseGeocodeAsync(loc.coords);
+    console.log(adr);
+    setAdress(adr[0].street + " " + adr[0].streetNumber);
   };
   // TODO GET LOCATION BY SEARCH
   const selectLocation = () => {};
@@ -92,7 +99,7 @@ const NewDepoScreen = () => {
         </View>
         {/* Street name: */}
         <View>
-          <Text style={tw`my-2`}>Izabrali ste: {locationLabel}</Text>
+          <Text style={tw`my-2`}>Izabrali ste: {adress}</Text>
         </View>
         {/* Photos of depo */}
         <View style={tw`mt-5 -ml-5`}>

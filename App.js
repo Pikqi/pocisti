@@ -9,9 +9,11 @@ import ProfileScreenStack from "./screens/ProfileScreenStack";
 import NewDepoScreen from "./screens/NewDepoScreen";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-export default function App() {
+
+const App = () => {
   const Tab = createBottomTabNavigator();
   LogBox.ignoreAllLogs(true);
+
   return (
     <NavigationContainer>
       <StatusBar style="auto"></StatusBar>
@@ -47,8 +49,9 @@ export default function App() {
       </SafeAreaProvider>
     </NavigationContainer>
   );
-}
+};
 
+export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

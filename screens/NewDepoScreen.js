@@ -1,7 +1,9 @@
 import {
   Alert,
+  Image,
   Keyboard,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -38,13 +40,14 @@ const NewDepoScreen = () => {
     }
     await Location.enableNetworkProviderAsync();
     const oldLocation = location;
+
     // let location = await Location.getCurrentPositionAsync({ timeInterval: 2000 });
     const currentLocation = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
     });
     setLocation(currentLocation);
-    getAdress(currentLocation);
     console.log(location);
+    getAdress(currentLocation);
   };
 
   // geolocation after
@@ -52,7 +55,9 @@ const NewDepoScreen = () => {
     const adr = await Location.reverseGeocodeAsync(loc.coords);
     console.log(adr);
     setAdress(
-      adr[0].street + " " + adr[0].streetNumber + " " + adr[0].district + " " + adr[0].city
+      `${adr[0].street} ${adr[0].streetNumber} ${
+        adr[0].district ? (adr[0].district != adr[0].city ? adr[0].district : "") : ""
+      }${adr[0].city}`
     );
   };
   // TODO GET LOCATION BY SEARCH
@@ -95,8 +100,21 @@ const NewDepoScreen = () => {
   };
 
   // TODO GET PHOTO FROM CAMERA
-  const getPhotoFromCamera = () => {};
+  const getPhotoFromCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+    }
+    takePhoto();
+  };
 
+  const takePhoto = async () => {
+    let pickerResult = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+    handleImagePicked(pickerResult);
+  };
   // SLANJE NOVE DEPONIJE
   const createNewDepo = async () => {
     // KORISNIK MORA BITI ULOGOVAN KAKO BI POSLAO
@@ -139,8 +157,9 @@ const NewDepoScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={tw`flex-1 bg-gray-200`}>
+    // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <SafeAreaView style={tw`flex-1 bg-gray-200`}>
+      <ScrollView>
         <Text style={tw`mt-10 mx-auto font-bold text-xl `}>Prijavite novu deponiju</Text>
 
         {/* Description */}
@@ -221,41 +240,53 @@ const NewDepoScreen = () => {
                 titleStyle={{ marginHorizontal: 5 }}
               />
             </View>
-          </View>
-          {/* Submit depo */}
-          <View style={tw`absolute bottom-3 ml-4 `}>
-            <View style={tw`flex-row justify-between items-center`}>
-              <Button
-                onPress={getLocation}
-                buttonStyle={{ width: 150, backgroundColor: "red" }}
-                containerStyle={{ margin: 5 }}
-                disabledStyle={{
-                  borderWidth: 2,
-                  borderColor: "#00F",
-                }}
-                disabledTitleStyle={{ color: "#00F" }}
-                loadingProps={{ animating: true }}
-                title="Odbaci"
-                titleStyle={{ marginHorizontal: 5 }}
-              />
-              <Button
-                onPress={createNewDepo}
-                buttonStyle={{ width: 150, backgroundColor: "green" }}
-                containerStyle={{ margin: 5 }}
-                disabledStyle={{
-                  borderWidth: 2,
-                  borderColor: "#00F",
-                }}
-                disabledTitleStyle={{ color: "#00F" }}
-                loadingProps={{ animating: true }}
-                title="Potvrdi"
-                titleStyle={{ marginHorizontal: 5 }}
-              />
+            {/* Prikazivanje fotografija */}
+            <View style={tw`flex-1 mx-auto`}>
+              {!imageLink ? (
+                <Text>Niste izabrali fotografiju</Text>
+              ) : (
+                <View>
+                  <Text>Izabrali ste: </Text>
+                  <Image style={{ height: 200, width: 200 }} source={{ uri: imageLink }}></Image>
+                </View>
+              )}
             </View>
           </View>
+          {/* Submit depo */}
+          {/* <View style={tw`absolute bottom-3 ml-4 `}> */}
+          <View style={tw`flex-row justify-between items-center`}>
+            <Button
+              onPress={getLocation}
+              buttonStyle={{ width: 150, backgroundColor: "red" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              loadingProps={{ animating: true }}
+              title="Odbaci"
+              titleStyle={{ marginHorizontal: 5 }}
+            />
+            <Button
+              onPress={createNewDepo}
+              buttonStyle={{ width: 150, backgroundColor: "green" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              loadingProps={{ animating: true }}
+              title="Potvrdi"
+              titleStyle={{ marginHorizontal: 5 }}
+            />
+          </View>
         </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+        {/* </View> */}
+      </ScrollView>
+    </SafeAreaView>
+    // </TouchableWithoutFeedback>
   );
 };
 

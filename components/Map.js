@@ -24,36 +24,20 @@ const Map = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [region, setRegion] = useState({
+    latitude: 44.8423089,
+    longitude: 20.4438745,
+    latitudeDelta: 0.2,
+    longitudeDelta: 0.2,
+  });
 
+  let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
 
-  const _scrollView = React.useRef(null);
+  const scrollViewRef = React.useRef(null);
+  const mapRef = React.useRef(null);
 
   const ANCHOR = { x: 0.5, y: 0.5 };
-
-  // useEffect(() => {
-  //   getUserLocation();
-  // }, []);
-
-  // const getUserLocation = async () => {
-  //   let { status } = await Location.getForegroundPermissionsAsync();
-  //   if (status !== "granted") {
-  //     setErrorMsg("Permission to access location was denied");
-  //     return;
-  //   }
-
-  //   await Location.enableNetworkProviderAsync();
-
-  //   let unsub = await Location.watchPositionAsync(
-  //     { accuracy: Location.Accuracy.High, timeInterval: 500 },
-  //     (loc) => {
-  //       console.log(loc);
-  //       setLocation(loc);
-  //     }
-  //   );
-
-  //   return unsub;
-  // };
 
   useFocusEffect(
     React.useCallback(async () => {
@@ -96,6 +80,36 @@ const Map = () => {
     }, [])
   );
 
+  useEffect(() => {
+    mapAnimation.addListener(({ value }) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
+      if (index >= markers.length) {
+        index = markers.length - 1;
+      }
+      if (index <= 0) {
+        index = 0;
+      }
+
+      clearTimeout(regionTimeout);
+
+      const regionTimeout = setTimeout(() => {
+        if (mapIndex !== index) {
+          mapIndex = index;
+          const { longitude, latitude } = markers[index];
+          mapRef.current.animateToRegion(
+            {
+              longitude,
+              latitude,
+              latitudeDelta: region.latitudeDelta,
+              longitudeDelta: region.longitudeDelta,
+            },
+            350
+          );
+        }
+      }, 10);
+    });
+  });
+
   const interpolations = markers.map((marker, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
 
@@ -108,18 +122,20 @@ const Map = () => {
     return { scale };
   });
 
+  const onMarkerPress = (mapEventData) => {
+    const markerID = mapEventData._targetInst.return.key;
+
+    let x = markerID * CARD_WIDTH + markerID * 20;
+    if (Platform.OS === "ios") {
+      x = x - SPACING_FOR_CARD_INSET;
+    }
+
+    scrollViewRef.current.scrollTo({ x: x, y: 0, animated: true });
+  };
+
   return (
     <View style={{ height: "100%" }}>
-      <MapView
-        style={{ flex: 1 }}
-        mapType="mutedStandard"
-        initialRegion={{
-          latitude: 44.8423089,
-          longitude: 20.4438745,
-          latitudeDelta: 0.2,
-          longitudeDelta: 0.2,
-        }}
-      >
+      <MapView style={{ flex: 1 }} mapType="mutedStandard" initialRegion={region} ref={mapRef}>
         {/* Marker of current user location */}
         {location && (
           <Marker
@@ -165,7 +181,7 @@ const Map = () => {
         })}
       </MapView>
       <Animated.ScrollView
-        ref={_scrollView}
+        ref={scrollViewRef}
         horizontal
         pagingEnabled
         scrollEventThrottle={1}

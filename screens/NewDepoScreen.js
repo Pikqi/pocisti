@@ -28,11 +28,14 @@ const NewDepoScreen = () => {
   const [adress, setAdress] = useState("");
   const [image, setImage] = useState(null);
   const [imageLink, setImageLink] = useState(null);
+  const [adressLoading, setAdressLoading] = useState(false);
   const auth = getAuth();
   const navigation = useNavigation();
 
   // TODO GET USERS LOCATION
   const getLocation = async () => {
+    setAdressLoading(true);
+
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -59,6 +62,7 @@ const NewDepoScreen = () => {
         adr[0].district ? (adr[0].district != adr[0].city ? adr[0].district : "") : ""
       }${adr[0].city}`
     );
+    setAdressLoading(false);
   };
   // TODO GET LOCATION BY SEARCH
   const selectLocation = () => {};
@@ -212,7 +216,11 @@ const NewDepoScreen = () => {
           {/* Street name: */}
           <View>
             <Text style={tw`my-2`}>
-              {adress ? `Izabrali ste: ${adress}` : "Niste jos izabrali adresu"}
+              {adressLoading
+                ? "Ucitava se..."
+                : adress
+                ? `Izabrali ste: ${adress}`
+                : "Niste jos izabrali adresu"}
             </Text>
           </View>
           {/* Photos of depo */}

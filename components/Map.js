@@ -27,8 +27,10 @@ const Map = () => {
   const [region, setRegion] = useState({
     latitude: 44.8423089,
     longitude: 20.4438745,
-    latitudeDelta: 0.2,
-    longitudeDelta: 0.2,
+    // latitudeDelta: 0.2,
+    // longitudeDelta: 0.2,
+    latitudeDelta: 0.04864195044303443,
+    longitudeDelta: 0.040142817690068,
   });
 
   let mapIndex = 0;

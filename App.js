@@ -6,9 +6,10 @@ import { Icon } from "react-native-elements";
 // Ekrani
 import HomeScreen from "./screens/HomeScreen";
 import ProfileScreenStack from "./screens/ProfileScreenStack";
-import NewDepoScreen from "./screens/NewDepoScreen";
+import NewDepoStack from "./screens/NewDepoStack";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import newDepoStack from "./screens/NewDepoStack";
 
 const App = () => {
   const Tab = createBottomTabNavigator();
@@ -29,7 +30,7 @@ const App = () => {
               } else if (route.name === "ProfileStack") {
                 iconName = "profile";
                 iconType = "antdesign";
-              } else if (route.name === "NewDepo") {
+              } else if (route.name === "NewDepoStack") {
                 iconName = focused ? "pluscircle" : "pluscircleo";
                 iconType = "antdesign";
               }
@@ -43,7 +44,7 @@ const App = () => {
           })}
         >
           <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
-          <Tab.Screen name="NewDepo" component={NewDepoScreen}></Tab.Screen>
+          <Tab.Screen name="NewDepoStack" component={newDepoStack}></Tab.Screen>
           <Tab.Screen name="ProfileStack" component={ProfileScreenStack}></Tab.Screen>
         </Tab.Navigator>
       </SafeAreaProvider>

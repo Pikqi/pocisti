@@ -199,7 +199,7 @@ const NewDepoScreen = () => {
                 titleStyle={{ marginHorizontal: 5 }}
               />
               <Button
-                onPress={selectLocation}
+                onPress={() => navigation.navigate("PickPlace")}
                 buttonStyle={{ width: 150 }}
                 containerStyle={{ margin: 5 }}
                 disabledStyle={{

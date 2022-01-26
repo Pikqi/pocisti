@@ -1,5 +1,6 @@
 import {
   Alert,
+  Image,
   Keyboard,
   SafeAreaView,
   StyleSheet,
@@ -69,7 +70,7 @@ const NewDepoScreen = () => {
   const pickImage = async () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
     });
 
     console.log({ pickerResult });
@@ -221,37 +222,47 @@ const NewDepoScreen = () => {
                 titleStyle={{ marginHorizontal: 5 }}
               />
             </View>
+            {/* SHOWING SELECTED PHOTO */}
+            {!imageLink ? (
+              <Text>Niste izabrali fotografiju josuvek</Text>
+            ) : (
+              <View>
+                <Text>Izabrana fotografija: </Text>
+                <Image style={{ height: 200, width: 200 }} source={{ uri: imageLink }}></Image>
+              </View>
+            )}
           </View>
           {/* Submit depo */}
-          <View style={tw`absolute bottom-3 ml-4 `}>
-            <View style={tw`flex-row justify-between items-center`}>
-              <Button
-                onPress={getLocation}
-                buttonStyle={{ width: 150, backgroundColor: "red" }}
-                containerStyle={{ margin: 5 }}
-                disabledStyle={{
-                  borderWidth: 2,
-                  borderColor: "#00F",
-                }}
-                disabledTitleStyle={{ color: "#00F" }}
-                loadingProps={{ animating: true }}
-                title="Odbaci"
-                titleStyle={{ marginHorizontal: 5 }}
-              />
-              <Button
-                onPress={createNewDepo}
-                buttonStyle={{ width: 150, backgroundColor: "green" }}
-                containerStyle={{ margin: 5 }}
-                disabledStyle={{
-                  borderWidth: 2,
-                  borderColor: "#00F",
-                }}
-                disabledTitleStyle={{ color: "#00F" }}
-                loadingProps={{ animating: true }}
-                title="Potvrdi"
-                titleStyle={{ marginHorizontal: 5 }}
-              />
-            </View>
+        </View>
+        <View style={tw`h-[200px]`}></View>
+        <View style={tw`absolute bottom-0 ml-4 `}>
+          <View style={tw`flex-row justify-between items-center`}>
+            <Button
+              onPress={getLocation}
+              buttonStyle={{ width: 150, backgroundColor: "red" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              loadingProps={{ animating: true }}
+              title="Odbaci"
+              titleStyle={{ marginHorizontal: 5 }}
+            />
+            <Button
+              onPress={createNewDepo}
+              buttonStyle={{ width: 150, backgroundColor: "green" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              loadingProps={{ animating: true }}
+              title="Potvrdi"
+              titleStyle={{ marginHorizontal: 5 }}
+            />
           </View>
         </View>
       </SafeAreaView>

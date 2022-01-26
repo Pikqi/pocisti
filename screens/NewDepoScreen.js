@@ -3,6 +3,7 @@ import {
   Image,
   Keyboard,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -25,13 +26,15 @@ const NewDepoScreen = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState({});
   const [adress, setAdress] = useState("");
-  const [image, setImage] = useState(null);
   const [imageLink, setImageLink] = useState(null);
+  const [adressLoading, setAdressLoading] = useState(false);
   const auth = getAuth();
   const navigation = useNavigation();
 
   // TODO GET USERS LOCATION
   const getLocation = async () => {
+    setAdressLoading(true);
+
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -39,13 +42,14 @@ const NewDepoScreen = () => {
     }
     await Location.enableNetworkProviderAsync();
     const oldLocation = location;
+
     // let location = await Location.getCurrentPositionAsync({ timeInterval: 2000 });
     const currentLocation = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
     });
     setLocation(currentLocation);
-    getAdress(currentLocation);
     console.log(location);
+    getAdress(currentLocation);
   };
 
   // geolocation after
@@ -53,8 +57,11 @@ const NewDepoScreen = () => {
     const adr = await Location.reverseGeocodeAsync(loc.coords);
     console.log(adr);
     setAdress(
-      adr[0].street + " " + adr[0].streetNumber + " " + adr[0].district + " " + adr[0].city
+      `${adr[0].street} ${adr[0].streetNumber} ${
+        adr[0].district ? (adr[0].district != adr[0].city ? adr[0].district : "") : ""
+      }${adr[0].city}`
     );
+    setAdressLoading(false);
   };
   // TODO GET LOCATION BY SEARCH
   const selectLocation = () => {};
@@ -96,8 +103,21 @@ const NewDepoScreen = () => {
   };
 
   // TODO GET PHOTO FROM CAMERA
-  const getPhotoFromCamera = () => {};
+  const getPhotoFromCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+    }
+    takePhoto();
+  };
 
+  const takePhoto = async () => {
+    let pickerResult = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+    handleImagePicked(pickerResult);
+  };
   // SLANJE NOVE DEPONIJE
   const createNewDepo = async () => {
     // KORISNIK MORA BITI ULOGOVAN KAKO BI POSLAO
@@ -140,8 +160,9 @@ const NewDepoScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={tw`flex-1 bg-gray-200`}>
+    // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <SafeAreaView style={tw`flex-1 bg-gray-200`}>
+      <ScrollView>
         <Text style={tw`mt-10 mx-auto font-bold text-xl `}>Prijavite novu deponiju</Text>
 
         {/* Description */}
@@ -177,7 +198,7 @@ const NewDepoScreen = () => {
                 titleStyle={{ marginHorizontal: 5 }}
               />
               <Button
-                onPress={selectLocation}
+                onPress={() => navigation.navigate("PickPlace")}
                 buttonStyle={{ width: 150 }}
                 containerStyle={{ margin: 5 }}
                 disabledStyle={{
@@ -194,7 +215,11 @@ const NewDepoScreen = () => {
           {/* Street name: */}
           <View>
             <Text style={tw`my-2`}>
-              {adress ? `Izabrali ste: ${adress}` : "Niste jos izabrali adresu"}
+              {adressLoading
+                ? "Ucitava se..."
+                : adress
+                ? `Izabrali ste: ${adress}`
+                : "Niste jos izabrali adresu"}
             </Text>
           </View>
           {/* Photos of depo */}
@@ -222,20 +247,20 @@ const NewDepoScreen = () => {
                 titleStyle={{ marginHorizontal: 5 }}
               />
             </View>
-            {/* SHOWING SELECTED PHOTO */}
-            {!imageLink ? (
-              <Text>Niste izabrali fotografiju josuvek</Text>
-            ) : (
-              <View>
-                <Text>Izabrana fotografija: </Text>
-                <Image style={{ height: 200, width: 200 }} source={{ uri: imageLink }}></Image>
-              </View>
-            )}
+            {/* Prikazivanje fotografija */}
+            <View style={tw`flex-1 mx-auto`}>
+              {!imageLink ? (
+                <Text>Niste izabrali fotografiju</Text>
+              ) : (
+                <View>
+                  <Text>Izabrali ste: </Text>
+                  <Image style={{ height: 200, width: 200 }} source={{ uri: imageLink }}></Image>
+                </View>
+              )}
+            </View>
           </View>
           {/* Submit depo */}
-        </View>
-        <View style={tw`h-[200px]`}></View>
-        <View style={tw`absolute bottom-0 ml-4 `}>
+          {/* <View style={tw`absolute bottom-3 ml-4 `}> */}
           <View style={tw`flex-row justify-between items-center`}>
             <Button
               onPress={getLocation}
@@ -265,8 +290,10 @@ const NewDepoScreen = () => {
             />
           </View>
         </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+        {/* </View> */}
+      </ScrollView>
+    </SafeAreaView>
+    // </TouchableWithoutFeedback>
   );
 };
 
@@ -276,8 +303,6 @@ const styles = StyleSheet.create({});
 
 // upload funkcija koja vraca download link koji cemo beleziti uz deponiju
 async function uploadImageAsync(uri) {
-  // Why are we using XMLHttpRequest? See:
-  // https://github.com/expo/expo/issues/2402#issuecomment-443726662
   const blob = await new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -295,7 +320,6 @@ async function uploadImageAsync(uri) {
   const fileRef = ref(getStorage(), uuid.v4());
   const result = await uploadBytes(fileRef, blob);
 
-  // We're done with the blob, close and release it
   blob.close();
 
   return await getDownloadURL(fileRef);

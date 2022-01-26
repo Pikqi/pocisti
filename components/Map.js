@@ -66,10 +66,10 @@ const Map = () => {
         style={{ flex: 1 }}
         mapType="mutedStandard"
         initialRegion={{
-          latitude: 44.8366,
-          longitude: 20.4157,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
+          latitude: 44.8423089,
+          longitude: 20.4438745,
+          latitudeDelta: 0.2,
+          longitudeDelta: 0.2,
         }}
       >
         {markers.map((marker) => (

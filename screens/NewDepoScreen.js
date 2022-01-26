@@ -28,6 +28,7 @@ const NewDepoScreen = () => {
   const [adress, setAdress] = useState("");
   const [imageLink, setImageLink] = useState(null);
   const [adressLoading, setAdressLoading] = useState(false);
+
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -64,7 +65,15 @@ const NewDepoScreen = () => {
     setAdressLoading(false);
   };
   // TODO GET LOCATION BY SEARCH
-  const selectLocation = () => {};
+  // passed into pickplacescreen
+  const selectLocation = (loc) => {
+    setLocation(loc);
+  };
+
+  const selectAdress = (adr) => {
+    setAdress(adr);
+  };
+
   // TODO GET PHOTO FROM GALLERY
   const getPhotoFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -152,11 +161,17 @@ const NewDepoScreen = () => {
         imageLink: imageLink,
       });
       // resetuj state
-      setDescription("");
-      setAdress("");
-      setLocation({});
+      resetState();
       return;
     }
+  };
+
+  const resetState = () => {
+    setDescription("");
+    setAdress("");
+    setAdressLoading(false);
+    setLocation(null);
+    setImageLink(null);
   };
 
   return (
@@ -198,7 +213,12 @@ const NewDepoScreen = () => {
                 titleStyle={{ marginHorizontal: 5 }}
               />
               <Button
-                onPress={() => navigation.navigate("PickPlace")}
+                onPress={() =>
+                  navigation.navigate("PickPlace", {
+                    selectLocation: selectLocation,
+                    selectAdress: selectAdress,
+                  })
+                }
                 buttonStyle={{ width: 150 }}
                 containerStyle={{ margin: 5 }}
                 disabledStyle={{
@@ -263,7 +283,7 @@ const NewDepoScreen = () => {
           {/* <View style={tw`absolute bottom-3 ml-4 `}> */}
           <View style={tw`flex-row justify-between items-center`}>
             <Button
-              onPress={getLocation}
+              onPress={resetState}
               buttonStyle={{ width: 150, backgroundColor: "red" }}
               containerStyle={{ margin: 5 }}
               disabledStyle={{

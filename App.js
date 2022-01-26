@@ -23,11 +23,12 @@ const App = () => {
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
               let iconType;
+              ``;
               if (route.name === "Home") {
                 iconName = focused ? "ios-home-sharp" : "ios-home-outline";
                 iconType = "ionicon";
               } else if (route.name === "ProfileStack") {
-                iconName = "profile";
+                iconName = "user";
                 iconType = "antdesign";
               } else if (route.name === "NewDepoStack") {
                 iconName = focused ? "pluscircle" : "pluscircleo";
@@ -37,6 +38,7 @@ const App = () => {
               // You can return any component that you like here!
               return <Icon type={iconType} name={iconName} size={size} color={color} />;
             },
+            tabBarShowLabel: false,
             headerShown: false,
             tabBarActiveTintColor: "green",
             tabBarInactiveTintColor: "gray",

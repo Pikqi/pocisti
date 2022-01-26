@@ -26,7 +26,6 @@ const NewDepoScreen = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState({});
   const [adress, setAdress] = useState("");
-  const [image, setImage] = useState(null);
   const [imageLink, setImageLink] = useState(null);
   const [adressLoading, setAdressLoading] = useState(false);
   const auth = getAuth();
@@ -78,7 +77,7 @@ const NewDepoScreen = () => {
   const pickImage = async () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
     });
 
     console.log({ pickerResult });
@@ -304,8 +303,6 @@ const styles = StyleSheet.create({});
 
 // upload funkcija koja vraca download link koji cemo beleziti uz deponiju
 async function uploadImageAsync(uri) {
-  // Why are we using XMLHttpRequest? See:
-  // https://github.com/expo/expo/issues/2402#issuecomment-443726662
   const blob = await new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -323,7 +320,6 @@ async function uploadImageAsync(uri) {
   const fileRef = ref(getStorage(), uuid.v4());
   const result = await uploadBytes(fileRef, blob);
 
-  // We're done with the blob, close and release it
   blob.close();
 
   return await getDownloadURL(fileRef);

@@ -2,13 +2,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { LogBox, StyleSheet, Text, View } from "react-native";
 import { Icon } from "react-native-elements";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 // Ekrani
 import HomeScreen from "./screens/HomeScreen";
 import ProfileScreenStack from "./screens/ProfileScreenStack";
-import NewDepoStack from "./screens/NewDepoStack";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import newDepoStack from "./screens/NewDepoStack";
 
 const App = () => {

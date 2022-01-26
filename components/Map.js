@@ -5,7 +5,7 @@ import { Button } from "react-native-elements";
 import { db } from "../firebase";
 import { addDoc, collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
 import * as Location from "expo-location";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const Map = () => {
   const [location, setLocation] = useState(null);
@@ -14,51 +14,83 @@ const Map = () => {
 
   const ANCHOR = { x: 0.5, y: 0.5 };
 
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
+  useFocusEffect(
+    React.useCallback(async () => {
+      let { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
 
-  useEffect(() => {
-    getMarkers();
-  }, []);
+      await Location.enableNetworkProviderAsync();
+
+      let unsub = await Location.watchPositionAsync(
+        { accuracy: Location.Accuracy.High, timeInterval: 500 },
+        (loc) => {
+          console.log(loc);
+          setLocation(loc);
+        }
+      );
+
+      return () => unsub();
+    }, [])
+  );
+
+  useFocusEffect(
+    React.useCallback(async () => {
+      const querySnapshot = await getDocs(collection(db, "depo"));
+
+      const m = querySnapshot.docs.map((item) => ({
+        id: item.id,
+        longitude: item.data().longitude,
+        latitude: item.data().latitude,
+      }));
+      setMarkers(m);
+      return () => querySnapshot();
+    }, [])
+  );
+  // useEffect(() => {
+  //   getCurrentLocation();
+  //   getMarkers();
+  // }, [refresh]);
 
   // useFocusEffect(() => {
   //   getCurrentLocation();
   // });
 
-  const getMarkers = async () => {
-    const querySnapshot = await getDocs(collection(db, "depo"));
+  // const getMarkers = async () => {
+  //   const querySnapshot = await getDocs(collection(db, "depo"));
 
-    const m = querySnapshot.docs.map((item) => ({
-      id: item.id,
-      longitude: item.data().longitude,
-      latitude: item.data().latitude,
-    }));
-    setMarkers(m);
-    // console.log(markers);
-    // console.log(m);
-  };
+  //   const m = querySnapshot.docs.map((item) => ({
+  //     id: item.id,
+  //     longitude: item.data().longitude,
+  //     latitude: item.data().latitude,
+  //   }));
+  //   setMarkers(m);
+  //   // console.log(markers);
+  //   // console.log(m);
+  // };
   // getting permisssion for location and location obj from expo docs
 
-  const getCurrentLocation = async () => {
-    let { status } = await Location.getForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permission to access location was denied");
-      return;
-    }
+  // const getCurrentLocation = async () => {
+  //   let { status } = await Location.getForegroundPermissionsAsync();
+  //   if (status !== "granted") {
+  //     setErrorMsg("Permission to access location was denied");
+  //     return;
+  //   }
 
-    await Location.enableNetworkProviderAsync();
+  //   await Location.enableNetworkProviderAsync();
 
-    let unsub = await Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, timeInterval: 500 },
-      (loc) => {
-        console.log(loc);
-        setLocation(loc);
-      }
-    );
+  //   let unsub = await Location.watchPositionAsync(
+  //     { accuracy: Location.Accuracy.High, timeInterval: 500 },
+  //     (loc) => {
+  //       console.log(loc);
+  //       setLocation(loc);
+  //     }
+  //   );
 
-    return unsub;
-  };
+  //   return unsub;
+  // };
 
   return (
     <View style={{ height: "100%" }}>

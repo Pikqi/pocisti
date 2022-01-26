@@ -48,15 +48,16 @@ const NewDepoScreen = () => {
     const currentLocation = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
     });
-    setLocation(currentLocation);
-    console.log(location);
+    setLocation({
+      latitude: currentLocation.coords.latitude,
+      longitude: currentLocation.coords.longitude,
+    });
     getAdress(currentLocation);
   };
 
   // geolocation after
   const getAdress = async (loc) => {
     const adr = await Location.reverseGeocodeAsync(loc.coords);
-    console.log(adr);
     setAdress(
       `${adr[0].street} ${adr[0].streetNumber} ${
         adr[0].district ? (adr[0].district != adr[0].city ? adr[0].district : "") : ""
@@ -67,7 +68,8 @@ const NewDepoScreen = () => {
   // TODO GET LOCATION BY SEARCH
   // passed into pickplacescreen
   const selectLocation = (loc) => {
-    setLocation(loc);
+    console.log(loc);
+    setLocation({ latitude: loc.lat, longitude: loc.lng });
   };
 
   const selectAdress = (adr) => {
@@ -88,8 +90,6 @@ const NewDepoScreen = () => {
       allowsEditing: true,
       aspect: [1, 1],
     });
-
-    console.log({ pickerResult });
 
     handleImagePicked(pickerResult);
   };
@@ -153,16 +153,23 @@ const NewDepoScreen = () => {
         timeStamp: Timestamp.now(),
         description: description,
         adress: adress,
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: location.latitude,
+        longitude: location.longitude,
         cleaned: false,
         userId: user.uid,
         userName: user.displayName,
         imageLink: imageLink,
       });
       // resetuj state
-      resetState();
-      return;
+      Alert.alert("Čestitamo", "Uspešno ste prijavili novu deponiju. Hvala!", [
+        {
+          text: "Ok",
+          onPress: () => {
+            resetState();
+            navigation.navigate("Home");
+          },
+        },
+      ]);
     }
   };
 

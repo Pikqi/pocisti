@@ -9,11 +9,10 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
-import { Button } from "react-native-elements";
 import { db } from "../firebase";
-import { addDoc, collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import * as Location from "expo-location";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { NavigationContainer, useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 const CARD_HEIGHT = 220;
@@ -22,7 +21,6 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const Map = () => {
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState({
     latitude: 44.8423089,
@@ -32,6 +30,8 @@ const Map = () => {
     latitudeDelta: 0.04864195044303443,
     longitudeDelta: 0.040142817690068,
   });
+
+  const navigation = useNavigation();
 
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
@@ -225,7 +225,9 @@ const Map = () => {
               </Text>
               <View style={styles.button}>
                 <TouchableOpacity
-                  onPress={() => {}}
+                  onPress={() => {
+                    navigation.navigate("Card", { marker });
+                  }}
                   style={[
                     styles.signIn,
                     {
@@ -310,7 +312,6 @@ const styles = StyleSheet.create({
     paddingRight: width - CARD_WIDTH,
   },
   card: {
-    // padding: 10,
     elevation: 2,
     backgroundColor: "#FFF",
     borderTopLeftRadius: 5,
@@ -336,7 +337,6 @@ const styles = StyleSheet.create({
   },
   cardtitle: {
     fontSize: 12,
-    // marginTop: 5,
     fontWeight: "bold",
   },
   cardDescription: {
@@ -349,10 +349,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  // marker: {
-  //   width: 30,
-  //   height: 30,
-  // },
   button: {
     alignItems: "center",
     marginTop: 5,

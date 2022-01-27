@@ -17,8 +17,8 @@ const UpdateCardScreen = ({ route }) => {
   const [location, setLocation] = useState(marker.location);
   const [adress, setAdress] = useState(marker.adress);
   const [imageLink, setImageLink] = useState(marker.imageLink);
-  const [newImageLink, setNewImageLink] = useState(false);
-  const [cleaned, setCleaned] = useState(marker.cleaned);
+  const [newImageLink, setNewImageLink] = useState(null);
+  const [cleaned, setCleaned] = useState(false);
 
   console.log(marker);
 
@@ -83,27 +83,25 @@ const UpdateCardScreen = ({ route }) => {
         [
           {
             text: "Ok",
-            onPress: () => {
-              return;
-            },
           },
         ]
       );
     }
-    setCleaned(true);
-    updateDepo();
-    Alert.alert("Hvala", "Hvala vam što čistite!", [
-      {
-        text: "Ok",
-        onPress: () => {
-          navigation.navigate("Map");
+    if (newImageLink) {
+      Alert.alert("Hvala", "Hvala vam što čistite!", [
+        {
+          text: "Ok",
+          onPress: () => {
+            navigation.navigate("Map");
+          },
         },
-      },
-    ]);
+      ]);
+      updateDepo(true);
+    }
   };
 
   //   TODO: UPDATING DEPO
-  const updateDepo = async () => {
+  const updateDepo = async (cleaned) => {
     await setDoc(
       doc(db, "depo", marker.id),
       {
@@ -115,6 +113,10 @@ const UpdateCardScreen = ({ route }) => {
     );
 
     navigation.navigate("Map");
+  };
+
+  const justUpdate = () => {
+    updateDepo(false);
   };
 
   return (
@@ -188,7 +190,7 @@ const UpdateCardScreen = ({ route }) => {
           {/* Bottom btn */}
           <View style={tw`flex-row justify-between items-center mt-5`}>
             <Button
-              onPress={updateDepo}
+              onPress={justUpdate}
               buttonStyle={{ width: 150 }}
               containerStyle={{ margin: 5 }}
               disabledStyle={{

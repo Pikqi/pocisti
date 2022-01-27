@@ -3,13 +3,14 @@ import React, { useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { Button } from "react-native-elements";
-
+import tw from "twrnc";
 const ProfileScreen = () => {
   const auth = getAuth();
   const navigation = useNavigation();
 
+  const user = auth.currentUser;
+
   useEffect(() => {
-    const user = auth.currentUser;
     if (!user) {
       navigation.replace("Login");
     }
@@ -22,7 +23,8 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View>
+    <View style={tw`flex-1`}>
+      <Text style={tw`px-2 text-xl font-semibold`}>Zdravo, {user.displayName} </Text>
       <Button
         onPress={signOut}
         buttonStyle={{ width: 150 }}

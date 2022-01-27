@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { Button, Input } from "react-native-elements";
+import { Button, Divider, Input } from "react-native-elements";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -66,6 +66,13 @@ const LoginScreen = () => {
           type="outline"
           title="Register"
         ></Button>
+        <Button
+          containerStyle={styles.button}
+          onPress={() => navigation.navigate("PasswordReset")}
+          type="clear"
+          title="Zaboravili ste sifru?"
+        ></Button>
+
         <View style={{ height: 200 }}></View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

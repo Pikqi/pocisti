@@ -10,9 +10,9 @@ import {
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import * as Location from "expo-location";
-import { NavigationContainer, useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 const CARD_HEIGHT = 220;
@@ -41,6 +41,7 @@ const Map = () => {
 
   const ANCHOR = { x: 0.5, y: 0.5 };
 
+  // USER CURRENT LOCATION
   useFocusEffect(
     React.useCallback(async () => {
       let { status } = await Location.getForegroundPermissionsAsync();
@@ -63,9 +64,11 @@ const Map = () => {
     }, [])
   );
 
+  // NOT CLEANED DEPOS
   useFocusEffect(
     React.useCallback(async () => {
-      const querySnapshot = await getDocs(collection(db, "depo"));
+      const q = query(collection(db, "depo"), where("cleaned", "==", false));
+      const querySnapshot = await getDocs(q);
 
       const m = querySnapshot.docs.map((item) => ({
         id: item.id,
@@ -76,6 +79,7 @@ const Map = () => {
         imageLink: item.data().imageLink,
         userId: item.data().userId,
         userName: item.data().userName,
+        cleaned: item.data().cleaned,
       }));
       setMarkers(m);
       return () => querySnapshot();

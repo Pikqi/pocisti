@@ -17,8 +17,12 @@ const UpdateCardScreen = ({ route }) => {
   const [location, setLocation] = useState(marker.location);
   const [adress, setAdress] = useState(marker.adress);
   const [imageLink, setImageLink] = useState(marker.imageLink);
-  const [newImageLink, setNewImageLink] = useState(null);
+  const [newImageLink, setNewImageLink] = useState(false);
   const [cleaned, setCleaned] = useState(marker.cleaned);
+
+  console.log(marker);
+
+  const navigation = useNavigation();
 
   const getPhotoFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -88,6 +92,14 @@ const UpdateCardScreen = ({ route }) => {
     }
     setCleaned(true);
     updateDepo();
+    Alert.alert("Hvala", "Hvala vam što čistite!", [
+      {
+        text: "Ok",
+        onPress: () => {
+          navigation.navigate("Map");
+        },
+      },
+    ]);
   };
 
   //   TODO: UPDATING DEPO
@@ -96,17 +108,19 @@ const UpdateCardScreen = ({ route }) => {
       doc(db, "depo", marker.id),
       {
         description: description,
-        imageLink: newImageLink,
+        imageLink: newImageLink || imageLink,
         cleaned: cleaned,
       },
       { merge: true }
     );
+
+    navigation.navigate("Map");
   };
 
   return (
     <SafeAreaView style={tw`flex-1 bg-gray-200`}>
       <ScrollView>
-        <Text style={tw`mt-10 mx-auto font-bold text-xl `}>Prijavite novu deponiju</Text>
+        <Text style={tw`mt-10 mx-auto font-bold text-xl `}>Ažurirajte deponiju</Text>
 
         {/* Description */}
 

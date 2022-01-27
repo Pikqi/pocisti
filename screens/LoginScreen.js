@@ -36,13 +36,13 @@ const LoginScreen = () => {
     >
       <View style={styles.inputContainer}>
         <Input
-          placeholder="Email"
+          placeholder="E-mail"
           type="email"
           value={email}
           onChangeText={(text) => setEmail(text)}
         ></Input>
         <Input
-          placeholder="Password"
+          placeholder="Sifra"
           secureTextEntry
           type="password"
           value={password}
@@ -57,7 +57,7 @@ const LoginScreen = () => {
         type="outline"
         title="Register"
       ></Button>
-      <View style={{ height: 300 }}></View>
+      <View style={{ height: 200 }}></View>
     </KeyboardAvoidingView>
   );
 };

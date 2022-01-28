@@ -17,6 +17,10 @@ Neki od modula koji ?poweruje nasu aplikaciju su:
 
 Možete testirati na emulatoru ili na telefonu
 
+Aplikaciju mozete pokrenuti na expo go aplikaciji [ovde](https://expo.dev/@pikqi/pocisti)
+
+#### Pokretanje aplikacije lokalno
+
 ###### Preduslovi za pokretanje aplikacije
 
 - [Node.js](https://nodejs.dev/download)

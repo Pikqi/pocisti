@@ -68,7 +68,6 @@ const NewDepoScreen = () => {
   // TODO GET LOCATION BY SEARCH
   // passed into pickplacescreen
   const selectLocation = (loc) => {
-    console.log(loc);
     setLocation({ latitude: loc.lat, longitude: loc.lng });
   };
 

@@ -20,8 +20,6 @@ const UpdateCardScreen = ({ route }) => {
   const [newImageLink, setNewImageLink] = useState(null);
   const [cleaned, setCleaned] = useState(false);
 
-  console.log(marker);
-
   const navigation = useNavigation();
 
   const getPhotoFromGallery = async () => {

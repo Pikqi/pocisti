@@ -55,7 +55,6 @@ const Map = () => {
       let unsub = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.High, timeInterval: 500 },
         (loc) => {
-          console.log(loc);
           setLocation(loc);
         }
       );

@@ -1,4 +1,11 @@
-import { KeyboardAvoidingView, StyleSheet, Text, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
@@ -28,41 +35,42 @@ const RegisterScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[{ flex: 1 }, styles.container]}
-      //   behavior="padding"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
-    >
-      <>
-        <StatusBar style="light"></StatusBar>
-        <Text h3 style={{ marginBottom: 50 }}></Text>
-        <View style={styles.inputContainer}>
-          <Input
-            placeholder="Korisnicko ime"
-            type="text"
-            value={name}
-            onChangeText={(text) => setName(text)}
-          ></Input>
-          <Input
-            placeholder="E-mail"
-            type="email"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          ></Input>
-          <Input
-            placeholder="Šifra"
-            type="password"
-            secureTextEntry
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          ></Input>
-        </View>
-        <Button rasied onPress={register} title="Register"></Button>
-      </>
-      <View style={{ height: 250 }}></View>
-      {/* </TouchableWithoutFeedback> */}
-    </KeyboardAvoidingView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        style={[{ flex: 1 }, styles.container]}
+        //   behavior="padding"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
+      >
+        <>
+          <StatusBar style="light"></StatusBar>
+          <Text h3 style={{ marginBottom: 50 }}></Text>
+          <View style={styles.inputContainer}>
+            <Input
+              placeholder="Korisnicko ime"
+              type="text"
+              value={name}
+              onChangeText={(text) => setName(text)}
+            ></Input>
+            <Input
+              placeholder="E-mail"
+              type="email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            ></Input>
+            <Input
+              placeholder="Lozinka"
+              type="password"
+              secureTextEntry
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            ></Input>
+          </View>
+          <Button rasied onPress={register} title="Registruj me"></Button>
+        </>
+        <View style={{ height: 100 }}></View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

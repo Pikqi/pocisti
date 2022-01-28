@@ -9,7 +9,6 @@ const Card = ({ route }) => {
     marker: { adress, id, description, latitude, longitude, imageLink },
     marker,
   } = route.params;
-  console.log();
   const initialRegion = {
     latitude: latitude,
     longitude: longitude,

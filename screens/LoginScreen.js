@@ -1,6 +1,5 @@
 import {
   StyleSheet,
-  Text,
   View,
   KeyboardAvoidingView,
   Platform,
@@ -10,7 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { Button, Divider, Input } from "react-native-elements";
+import { Button, Input } from "react-native-elements";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +23,7 @@ const LoginScreen = () => {
         navigation.replace("Profile");
       }
     });
+    return unsubscribe;
   });
 
   const signIn = () => {
@@ -51,7 +51,7 @@ const LoginScreen = () => {
             onChangeText={(text) => setEmail(text)}
           ></Input>
           <Input
-            placeholder="Sifra"
+            placeholder="Lozinka"
             secureTextEntry
             type="password"
             value={password}
@@ -59,21 +59,21 @@ const LoginScreen = () => {
             onSubmitEditing={signIn}
           ></Input>
         </View>
-        <Button containerStyle={styles.button} onPress={signIn} title="Login"></Button>
+        <Button containerStyle={styles.button} onPress={signIn} title="Prijavi me"></Button>
         <Button
           containerStyle={styles.button}
           onPress={() => navigation.navigate("Register")}
           type="outline"
-          title="Register"
+          title="Registruj se"
         ></Button>
         <Button
           containerStyle={styles.button}
           onPress={() => navigation.navigate("PasswordReset")}
           type="clear"
-          title="Zaboravili ste sifru?"
+          title="Zaboravili ste lozinku?"
         ></Button>
 
-        <View style={{ height: 200 }}></View>
+        {/* <View style={{ height: 50 }}></View> */}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );

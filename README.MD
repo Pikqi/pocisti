@@ -1,5 +1,7 @@
 # Počisti
 
+Počisti je aplikacija kojom se tip PAB prijavio na 11. MTS app konkurs 2022.
+
 #### Tri, četiri, POČISTI! Doprinesite čistijoj i zdravijoj Srbiji.
 
 Počisti aplikacija je pisana u javascript-u pomocu react native framework-a. Odlučili smo se za react native umesto nativnog android developmenta radi mnogo bržeg vremena razvijanja. Za backend je zasluzan google-ov baas (backend as a service) firebase, iz kojeg koristimo autentikaciju, firestore bazu i storage sistem.
